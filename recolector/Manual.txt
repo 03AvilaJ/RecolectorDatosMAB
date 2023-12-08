@@ -1,0 +1,63 @@
+Manual del Desarrollador para la Aplicación Myo Armband
+
+1. Requisitos Previos:
+
+Antes de comenzar a desarrollar con la aplicación Myo Armband, asegúrate de tener instaladas todas las dependencias necesarias:
+
+pip install myo-python
+
+2. Estructura del Proyecto:
+
+El proyecto se encuentra estructurado de la siguente manera con la siguiente estructura de archivos:
+
+recolector/
+│
+├── myo_handler.py
+└── main.py
+
+3. Archivo myo_handler.py:
+Este archivo contiene la clase MyoHandler que gestiona los eventos del Myo Armband.
+
+# myo_handler.py
+from myo import Myo, emg_mode
+import threading
+
+class MyoHandler(Myo):
+    def __init__(self):
+        super().__init__()
+        self.lock = threading.Lock()
+
+    def on_connect(self, myo, timestamp, firmware_version):
+        with self.lock:
+            print("Myo Armband conectado!")
+
+    def on_emg(self, myo, timestamp, emg_data):
+        with self.lock:
+            print("Datos EMG recibidos:", emg_data)
+      
+4. Archivo main.py:
+
+Este archivo es el punto de entrada de la aplicación. Conecta el Myo Armband y maneja la interacción principal.
+
+
+# main.py
+from myo_handler import MyoHandler
+import time
+
+def main():
+    try:
+        myo_handler = MyoHandler()
+        myo_handler.connect()
+        myo_handler.set_stream_emg(emg_mode.EMG_MODE_RAW)
+
+        while True:
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        print("Desconectando el Myo Armband...")
+        myo_handler.disconnect()
+
+if __name__ == "__main__":
+    main()
+
+NOTA: LA APLICACION AUN SE ESNCUENTRA EN DESARROLLO POR LO CUAL AUN NO TIENE UNA EJECUCION SATISFACTORIA
